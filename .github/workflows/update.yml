@@ -5,36 +5,9 @@ on:
     - cron: '0 23 * * *'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Python 설치
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.10'
-
-    - name: 패키지 설치
-      run: pip install -r requirements.txt
-
-    - name: 데이터 수집
-      env:
-        SERVICE_KEY: ${{ secrets.SERVICE_KEY }}
-      run: python scripts/fetch_data.py
-
-    - name: 이메일 발송
-      env:
-        EMAIL_USER: ${{ secrets.EMAIL_USER }}
-        EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
-      run: python scripts/send_email.py
-
-    - name: Git 저장
-      run: |
-        git config user.name "github-actions"
-        git config user.email "actions@github.com"
-        git add .
-        git commit -m "update data"
-        git push
