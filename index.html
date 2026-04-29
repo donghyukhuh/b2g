@@ -97,7 +97,11 @@ function rowHtml(r){
 }
 
 function parseItems(obj){
-  return obj?.response?.body?.items || obj?.response?.body?.item || [];
+  const raw = obj?.response?.body?.items || obj?.response?.body?.item || [];
+  if (Array.isArray(raw)) return raw;
+  if (raw && Array.isArray(raw.item)) return raw.item;
+  if (raw && typeof raw === 'object') return [raw];
+  return [];
 }
 
 async function fetchSection(type){
