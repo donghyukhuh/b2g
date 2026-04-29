@@ -1,0 +1,38 @@
+name: 나라장터 입찰 데이터 수집
+
+on:
+  schedule:
+    # KST 기준 오전 8시, 오후 2시, 오후 8시 (UTC +9 → UTC -9h)
+    - cron: "0 23 * * *"   # KST 08:00
+    - cron: "0 5 * * *"    # KST 14:00
+    - cron: "0 11 * * *"   # KST 20:00
+  workflow_dispatch:       # 수동 실행 허용
+
+permissions:
+  contents: write          # data/bids.json git push를 위해 필수
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 체크아웃
+        uses: actions/checkout@v4
+
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: 입찰 데이터 수집
+        run: node fetch_bids.js
+        env:
+          NARA_API_KEY: ${{ secrets.NARA_API_KEY }}
+
+      - name: 변경사항 커밋 & 푸시
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/bids.json
+          git diff --staged --quiet && echo "변경 없음" || git commit -m "chore: 입찰 데이터 갱신 $(date +'%Y-%m-%d %H:%M KST')"
+          git push
