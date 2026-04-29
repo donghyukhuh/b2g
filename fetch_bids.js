@@ -11,7 +11,6 @@ const path = require("path");
 const SERVICE_KEY = process.env.NARA_API_KEY;
 const BASE_URL =
   "https://apis.data.go.kr/1230000/BidPublicInfoService/getBidPblancListInfoServcPPSSrch";
-const REGION_ALLOWED = ["서울", "경기", "전국"];
 
 // ── 날짜 헬퍼 ─────────────────────────────────────────────
 function fmtDate(d) {
@@ -24,18 +23,6 @@ function toMoney(v) {
   const n = Number(v || 0);
   if (!n) return "-";
   return n.toLocaleString("ko-KR") + "원";
-}
-
-function isRegionAllowed(item) {
-  const txt = [
-    item.rgstTyNm,
-    item.dminsttNm,
-    item.ntceInsttNm,
-    item.bidNtceNm,
-  ]
-    .filter(Boolean)
-    .join(" ");
-  return REGION_ALLOWED.some((r) => txt.includes(r));
 }
 
 // ── 키워드 목록 로드 ──────────────────────────────────────
@@ -81,7 +68,6 @@ async function fetchKeyword(keyword) {
   const normalized = Array.isArray(rows) ? rows : [rows];
 
   return normalized
-    .filter(isRegionAllowed)
     .slice(0, 20)
     .map((it) => ({
       title: it.bidNtceNm || "-",
