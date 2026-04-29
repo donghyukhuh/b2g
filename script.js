@@ -29,7 +29,10 @@ function renderChips() {
   state.keywords.forEach((kw) => {
     const chip = document.createElement("div");
     chip.className = "chip";
-    chip.innerHTML = `<span>${kw}</span>`;
+
+    const label = document.createElement("span");
+    label.textContent = kw;
+    chip.appendChild(label);
 
     const del = document.createElement("button");
     del.className = "del";
@@ -93,6 +96,19 @@ async function fetchKeyword(keyword) {
     }));
 }
 
+function sanitizeHttpUrl(url) {
+  if (!url) return "";
+  try {
+    const parsed = new URL(url, window.location.origin);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.href;
+    }
+  } catch {
+    return "";
+  }
+  return "";
+}
+
 function renderTable(keyword, rows, error = "") {
   const section = document.createElement("section");
   const title = document.createElement("h3");
@@ -112,24 +128,64 @@ function renderTable(keyword, rows, error = "") {
   wrap.className = "table-wrap";
 
   const table = document.createElement("table");
-  table.innerHTML = `
-    <thead>
-      <tr>
-        <th>공고명</th><th>금액</th><th>공고기관</th><th>입찰마감일시</th><th>파일첨부문서</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${rows.length ? rows.map(r => `
-        <tr>
-          <td>${r.title}</td>
-          <td>${r.amount}</td>
-          <td>${r.org}</td>
-          <td>${r.due}</td>
-          <td>${r.fileUrl ? `<a href="${r.fileUrl}" target="_blank" rel="noopener">다운로드</a>` : "-"}</td>
-        </tr>
-      `).join("") : `<tr><td colspan="5">검색 결과 없음</td></tr>`}
-    </tbody>
-  `;
+  const thead = document.createElement("thead");
+  const headerRow = document.createElement("tr");
+  ["공고명", "금액", "공고기관", "입찰마감일시", "파일첨부문서"].forEach((text) => {
+    const th = document.createElement("th");
+    th.textContent = text;
+    headerRow.appendChild(th);
+  });
+  thead.appendChild(headerRow);
+
+  const tbody = document.createElement("tbody");
+
+  if (!rows.length) {
+    const tr = document.createElement("tr");
+    const td = document.createElement("td");
+    td.colSpan = 5;
+    td.textContent = "검색 결과 없음";
+    tr.appendChild(td);
+    tbody.appendChild(tr);
+  } else {
+    rows.forEach((r) => {
+      const tr = document.createElement("tr");
+
+      const titleCell = document.createElement("td");
+      titleCell.textContent = r.title;
+      tr.appendChild(titleCell);
+
+      const amountCell = document.createElement("td");
+      amountCell.textContent = r.amount;
+      tr.appendChild(amountCell);
+
+      const orgCell = document.createElement("td");
+      orgCell.textContent = r.org;
+      tr.appendChild(orgCell);
+
+      const dueCell = document.createElement("td");
+      dueCell.textContent = r.due;
+      tr.appendChild(dueCell);
+
+      const fileCell = document.createElement("td");
+      const safeUrl = sanitizeHttpUrl(r.fileUrl);
+      if (safeUrl) {
+        const link = document.createElement("a");
+        link.href = safeUrl;
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+        link.textContent = "다운로드";
+        fileCell.appendChild(link);
+      } else {
+        fileCell.textContent = "-";
+      }
+      tr.appendChild(fileCell);
+
+      tbody.appendChild(tr);
+    });
+  }
+
+  table.appendChild(thead);
+  table.appendChild(tbody);
 
   wrap.appendChild(table);
   section.appendChild(wrap);
