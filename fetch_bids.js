@@ -40,15 +40,9 @@ async function fetchKeyword(keyword) {
   const today = new Date();
   const start = new Date(today.getTime() - 1000 * 60 * 60 * 24 * 30);
 
-  const url = new URL(BASE_URL);
-  url.searchParams.set("serviceKey", SERVICE_KEY);
-  url.searchParams.set("numOfRows", "100");
-  url.searchParams.set("pageNo", "1");
-  url.searchParams.set("type", "json");
-  url.searchParams.set("inqryDiv", "1");
-  url.searchParams.set("inqryBgnDt", fmtDate(start));
-  url.searchParams.set("inqryEndDt", fmtDate(today));
-  url.searchParams.set("bidNtceNm", keyword);
+const url = `${BASE_URL}?serviceKey=${SERVICE_KEY}&numOfRows=100&pageNo=1&type=json&inqryDiv=1&inqryBgnDt=${fmtDate(start)}&inqryEndDt=${fmtDate(today)}&bidNtceNm=${encodeURIComponent(keyword)}`;
+
+  const resp = await fetch(url);
 
   const resp = await fetch(url.toString());
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
