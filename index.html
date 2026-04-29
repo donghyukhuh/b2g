@@ -35,7 +35,7 @@
         <strong>키워드 관리</strong>
         <input id="kwInput" placeholder="키워드 입력 후 추가" />
         <button id="addKw">추가</button>
-        <button id="refresh">지금 새로고침</button>
+        <button id="refresh">새로고침</button>
       </div>
       <div id="chipBox" class="chips"></div>
       <p class="status" id="statusText">업데이트 기준: 한국시간 매일 오전 8시 자동 갱신 + 수동 새로고침 가능</p>
@@ -76,7 +76,7 @@ function renderKeywords(){
   const box=$('chipBox'); box.innerHTML='';
   keywords.forEach((kw,i)=>{
     const chip=document.createElement('div'); chip.className='chip';
-    chip.innerHTML=`<span>${kw}</span><button data-i="${i}">삭제</button>`;
+    chip.innerHTML=`<span>${kw}</span><button data-i="${i}">X</button>`;
     box.appendChild(chip);
   });
   box.querySelectorAll('button').forEach(btn=>btn.onclick=()=>{keywords.splice(+btn.dataset.i,1); saveAndRefresh();});
