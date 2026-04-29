@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>로셜리티 입찰검색 대시보드</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <h1>로셜리티 입찰검색 대시보드</h1>
+    <p>제작: 임팩트브랜딩커뮤니티 (주)로셜리티</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2>키워드 설정</h2>
+      <div class="keyword-input-wrap">
+        <input id="keywordInput" type="text" placeholder="키워드 입력 후 추가" />
+        <button id="addKeywordBtn">추가</button>
+        <button id="refreshBtn">지금 새로고침</button>
+      </div>
+      <div id="keywordChips" class="chips"></div>
+      <p class="hint">자동 갱신: 60초마다</p>
+    </section>
+
+    <section class="panel">
+      <h2>검색결과 (입찰공고 목록)</h2>
+      <p id="lastUpdated" class="hint">최근 갱신: -</p>
+      <div id="results"></div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
